@@ -40,16 +40,31 @@ public abstract class DungeonRoom
 
     public static DungeonRoom makeRoom(MapGenDungeon dungeon, Random rand, int x, int y, int z, ForgeDirection dir)
     {
+        if (dungeon.otherRooms.isEmpty())
+        {
+            return null;
+        }
+
         return dungeon.otherRooms.get(rand.nextInt(dungeon.otherRooms.size())).makeRoom(dungeon, x, y, z, dir);
     }
 
     public static DungeonRoom makeBossRoom(MapGenDungeon dungeon, Random rand, int x, int y, int z, ForgeDirection dir)
     {
+        if (dungeon.bossRooms.isEmpty())
+        {
+            return null;
+        }
+
         return dungeon.bossRooms.get(rand.nextInt(dungeon.bossRooms.size())).makeRoom(dungeon, x, y, z, dir);
     }
 
     public static DungeonRoom makeTreasureRoom(MapGenDungeon dungeon, Random rand, int x, int y, int z, ForgeDirection dir)
     {
+        if (dungeon.treasureRooms.isEmpty())
+        {
+            return null;
+        }
+
         return dungeon.treasureRooms.get(rand.nextInt(dungeon.treasureRooms.size())).makeRoom(dungeon, x, y, z, dir);
     }
 

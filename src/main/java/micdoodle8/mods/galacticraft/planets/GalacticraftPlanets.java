@@ -17,6 +17,7 @@ import micdoodle8.mods.galacticraft.api.vector.Vector3;
 import micdoodle8.mods.galacticraft.core.Constants;
 import micdoodle8.mods.galacticraft.planets.asteroids.AsteroidsModule;
 import micdoodle8.mods.galacticraft.planets.mars.MarsModule;
+import micdoodle8.mods.galacticraft.planets.venus.VenusModule;
 import net.minecraft.block.Block;
 import net.minecraftforge.common.config.ConfigElement;
 
@@ -38,6 +39,7 @@ public class GalacticraftPlanets
 
     public static final String MODULE_KEY_MARS = "MarsModule";
     public static final String MODULE_KEY_ASTEROIDS = "AsteroidsModule";
+    public static final String MODULE_KEY_VENUS = "VenusModule";
 
     @SidedProxy(clientSide = "micdoodle8.mods.galacticraft.planets.PlanetsProxyClient", serverSide = "micdoodle8.mods.galacticraft.planets.PlanetsProxy")
     public static PlanetsProxy proxy;
@@ -48,6 +50,7 @@ public class GalacticraftPlanets
         FMLCommonHandler.instance().bus().register(this);
         GalacticraftPlanets.commonModules.put(GalacticraftPlanets.MODULE_KEY_MARS, new MarsModule());
         GalacticraftPlanets.commonModules.put(GalacticraftPlanets.MODULE_KEY_ASTEROIDS, new AsteroidsModule());
+        GalacticraftPlanets.commonModules.put(GalacticraftPlanets.MODULE_KEY_VENUS, new VenusModule());
         GalacticraftPlanets.proxy.preInit(event);
     }
 

@@ -67,6 +67,12 @@ public class MapGenDungeon
         final int length = rand.nextInt(4) + 5;
 
         DungeonRoom currentRoom = DungeonRoom.makeRoom(this, rand, x, y, z, ForgeDirection.DOWN);
+
+        if (currentRoom == null)
+        {
+            return;
+        }
+
         currentRoom.generate(blocks, metas, chunkX, chunkZ);
         this.rooms.add(currentRoom);
         final DungeonBoundingBox cbb = currentRoom.getBoundingBox();
@@ -288,13 +294,7 @@ public class MapGenDungeon
                             this.genCorridor(corridor1, rand, possibleRoom.posY, chunkX, chunkZ, dir, blocks, metas, false);
                             break;
                         }
-                        else
-                        {
-                        }
                     }
-                }
-                else
-                {
                 }
             }
         }
