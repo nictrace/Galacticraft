@@ -2,7 +2,7 @@ package micdoodle8.mods.galacticraft.planets.asteroids.dimension;
 
 import com.google.common.collect.Maps;
 import micdoodle8.mods.galacticraft.api.vector.BlockVec3;
-import micdoodle8.mods.galacticraft.planets.asteroids.tick.AsteroidsTickHandlerServer;
+import micdoodle8.mods.galacticraft.planets.asteroids.AsteroidsModule;
 import micdoodle8.mods.galacticraft.planets.asteroids.tile.TileEntityShortRangeTelepad;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -98,7 +98,7 @@ public class ShortRangeTelepadHandler extends WorldSavedData
 
                 if (previous == null || !previous.equals(newEntry))
                 {
-                    AsteroidsTickHandlerServer.spaceRaceData.setDirty(true);
+                    AsteroidsModule.spaceRaceData.setDirty(true);
                 }
             }
         }
@@ -111,7 +111,7 @@ public class ShortRangeTelepadHandler extends WorldSavedData
             if (telepad.addressValid)
             {
                 tileMap.remove(telepad.address);
-                AsteroidsTickHandlerServer.spaceRaceData.setDirty(true);
+                AsteroidsModule.spaceRaceData.setDirty(true);
             }
         }
     }

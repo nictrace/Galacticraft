@@ -2,6 +2,7 @@ package micdoodle8.mods.galacticraft.planets.asteroids;
 
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.*;
+import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import micdoodle8.mods.galacticraft.api.GalacticraftRegistry;
@@ -17,13 +18,10 @@ import micdoodle8.mods.galacticraft.core.recipe.NasaWorkbenchRecipe;
 import micdoodle8.mods.galacticraft.planets.GuiIdsPlanets;
 import micdoodle8.mods.galacticraft.planets.IPlanetsModule;
 import micdoodle8.mods.galacticraft.planets.asteroids.blocks.AsteroidBlocks;
+import micdoodle8.mods.galacticraft.planets.asteroids.dimension.ShortRangeTelepadHandler;
 import micdoodle8.mods.galacticraft.planets.asteroids.dimension.TeleportTypeAsteroids;
 import micdoodle8.mods.galacticraft.planets.asteroids.dimension.WorldProviderAsteroids;
-import micdoodle8.mods.galacticraft.planets.asteroids.entities.EntityAstroMiner;
-import micdoodle8.mods.galacticraft.planets.asteroids.entities.EntityEntryPod;
-import micdoodle8.mods.galacticraft.planets.asteroids.entities.EntityGrapple;
-import micdoodle8.mods.galacticraft.planets.asteroids.entities.EntitySmallAsteroid;
-import micdoodle8.mods.galacticraft.planets.asteroids.entities.EntityTier3Rocket;
+import micdoodle8.mods.galacticraft.planets.asteroids.entities.*;
 import micdoodle8.mods.galacticraft.planets.asteroids.entities.player.AsteroidsPlayerHandler;
 import micdoodle8.mods.galacticraft.planets.asteroids.event.AsteroidsEventHandler;
 import micdoodle8.mods.galacticraft.planets.asteroids.inventory.ContainerAstroMinerDock;
@@ -34,13 +32,13 @@ import micdoodle8.mods.galacticraft.planets.asteroids.recipe.CanisterRecipes;
 import micdoodle8.mods.galacticraft.planets.asteroids.recipe.RecipeManagerAsteroids;
 import micdoodle8.mods.galacticraft.planets.asteroids.schematic.SchematicAstroMiner;
 import micdoodle8.mods.galacticraft.planets.asteroids.schematic.SchematicTier3Rocket;
-import micdoodle8.mods.galacticraft.planets.asteroids.tick.AsteroidsTickHandlerServer;
 import micdoodle8.mods.galacticraft.planets.asteroids.tile.*;
 import micdoodle8.mods.galacticraft.planets.mars.MarsModule;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
@@ -48,9 +46,9 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidContainerRegistry;
+import net.minecraftforge.fluids.FluidContainerRegistry.FluidContainerData;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidContainerRegistry.FluidContainerData;
 import net.minecraftforge.oredict.RecipeSorter;
 
 import java.io.File;
@@ -140,10 +138,6 @@ public class AsteroidsModule implements IPlanetsModule
     	SchematicRegistry.registerSchematicRecipe(new SchematicAstroMiner());
 
         GalacticraftCore.packetPipeline.addDiscriminator(7, PacketSimpleAsteroids.class);
-
-        AsteroidsTickHandlerServer eventHandler = new AsteroidsTickHandlerServer();
-        FMLCommonHandler.instance().bus().register(eventHandler);
-        MinecraftForge.EVENT_BUS.register(eventHandler);
 
         this.registerEntities();
 
@@ -254,12 +248,6 @@ public class AsteroidsModule implements IPlanetsModule
     }
 
     @Override
-    public void serverInit(FMLServerStartedEvent event)
-    {
-        AsteroidsTickHandlerServer.restart();
-    }
-
-    @Override
     public void getGuiIDs(List<Integer> idList)
     {
         idList.add(GuiIdsPlanets.MACHINE_ASTEROIDS);
@@ -359,5 +347,36 @@ public class AsteroidsModule implements IPlanetsModule
     public void syncConfig()
     {
         ConfigManagerAsteroids.syncConfig(false);
+    }
+
+    public static ShortRangeTelepadHandler spaceRaceData = null;
+
+    @Override
+    public void serverInit(FMLServerStartedEvent event)
+    {
+        spaceRaceData = null; // Restart
+    }
+
+    @Override
+    public void onServerTick(TickEvent.ServerTickEvent event)
+    {
+        MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
+        //Prevent issues when clients switch to LAN servers
+        if (server == null) return;
+
+        if (event.phase == TickEvent.Phase.START)
+        {
+            if (spaceRaceData == null)
+            {
+                World world = server.worldServerForDimension(0);
+                spaceRaceData = (ShortRangeTelepadHandler) world.mapStorage.loadData(ShortRangeTelepadHandler.class, ShortRangeTelepadHandler.saveDataID);
+
+                if (spaceRaceData == null)
+                {
+                    spaceRaceData = new ShortRangeTelepadHandler(ShortRangeTelepadHandler.saveDataID);
+                    world.mapStorage.setData(ShortRangeTelepadHandler.saveDataID, spaceRaceData);
+                }
+            }
+        }
     }
 }

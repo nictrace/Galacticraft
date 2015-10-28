@@ -12,6 +12,7 @@ import micdoodle8.mods.galacticraft.core.entities.EntityEvolvedZombie;
 import micdoodle8.mods.galacticraft.core.world.gen.dungeon.MapGenDungeon;
 import micdoodle8.mods.galacticraft.planets.venus.blocks.VenusBlocks;
 import net.minecraft.block.Block;
+import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.chunk.IChunkProvider;
@@ -91,20 +92,38 @@ public class ChunkProviderVenus extends ChunkProviderSpace
     @Override
     protected BlockMetaPair getGrassBlock()
     {
-        return new BlockMetaPair(VenusBlocks.venusBlock, (byte) 5);
+        return new BlockMetaPair(Blocks.wool, (byte)4);
     }
 
     @Override
     protected BlockMetaPair getDirtBlock()
     {
-        return new BlockMetaPair(VenusBlocks.venusBlock, (byte) 6);
+        return new BlockMetaPair(Blocks.dirt, (byte)0);
     }
 
     @Override
     protected BlockMetaPair getStoneBlock()
     {
-        return new BlockMetaPair(VenusBlocks.venusBlock, (byte) 9);
+        return new BlockMetaPair(Blocks.stone, (byte)0);
     }
+
+//    @Override
+//    protected BlockMetaPair getGrassBlock()
+//    {
+//        return new BlockMetaPair(VenusBlocks.venusBlock, (byte) 5);
+//    }
+//
+//    @Override
+//    protected BlockMetaPair getDirtBlock()
+//    {
+//        return new BlockMetaPair(VenusBlocks.venusBlock, (byte) 6);
+//    }
+//
+//    @Override
+//    protected BlockMetaPair getStoneBlock()
+//    {
+//        return new BlockMetaPair(VenusBlocks.venusBlock, (byte) 9);
+//    }
 
     @Override
     public double getHeightModifier()

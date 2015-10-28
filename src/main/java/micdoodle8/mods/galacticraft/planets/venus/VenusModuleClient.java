@@ -15,6 +15,7 @@ import micdoodle8.mods.galacticraft.api.world.IGalacticraftWorldProvider;
 import micdoodle8.mods.galacticraft.core.client.CloudRenderer;
 import micdoodle8.mods.galacticraft.planets.GuiIdsPlanets;
 import micdoodle8.mods.galacticraft.planets.IPlanetsModuleClient;
+import micdoodle8.mods.galacticraft.planets.venus.client.CloudRendererVenus;
 import micdoodle8.mods.galacticraft.planets.venus.client.SkyProviderVenus;
 import micdoodle8.mods.galacticraft.planets.venus.dimension.WorldProviderVenus;
 import net.minecraft.block.Block;
@@ -49,15 +50,11 @@ public class VenusModuleClient implements IPlanetsModuleClient
     @Override
     public void postInit(FMLPostInitializationEvent event)
     {
-        IModelCustom chamberModel = AdvancedModelLoader.loadModel(new ResourceLocation(VenusModule.ASSET_PREFIX, "models/chamber.obj"));
-        IModelCustom cargoRocketModel = AdvancedModelLoader.loadModel(new ResourceLocation(VenusModule.ASSET_PREFIX, "models/cargoRocket.obj"));
-
         // Tile Entity Renderers
 
         // Entities
 
         // Add Armor Renderer Prefix
-        RenderingRegistry.addNewArmourRendererPrefix("desh");
 
         // Item Renderers
     }
@@ -150,7 +147,9 @@ public class VenusModuleClient implements IPlanetsModuleClient
 
                     if (world.provider.getCloudRenderer() == null)
                     {
-                        world.provider.setCloudRenderer(new CloudRenderer());
+                        CloudRendererVenus cloudRendererVenus = new CloudRendererVenus();
+                        FMLCommonHandler.instance().bus().register(cloudRendererVenus);
+                        world.provider.setCloudRenderer(cloudRendererVenus);
                     }
                 }
             }

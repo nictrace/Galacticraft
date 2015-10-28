@@ -19,18 +19,23 @@ public class WorldProviderVenus extends WorldProviderSpace implements IGalacticr
 {
     private double solarMultiplier = -1D;
 
+    @Override
+    @SideOnly(Side.CLIENT)
+    public float getCloudHeight()
+    {
+        return this.terrainType.getCloudHeight();
+    }
+
 	@Override
     public Vector3 getFogColor()
     {
-        float f = 1.0F - this.getStarBrightness(1.0F);
-        return new Vector3(210F / 255F * f, 120F / 255F * f, 59F / 255F * f);
+        return new Vector3(177 / 855.0F * 0.45F, 83 / 855.0F * 0.45F, 13 / 855.0F * 0.45F);
     }
 
     @Override
     public Vector3 getSkyColor()
     {
-        float f = 1.0F - this.getStarBrightness(1.0F);
-        return new Vector3(154 / 255.0F * f, 114 / 255.0F * f, 66 / 255.0F * f);
+        return new Vector3(177 / 455.0F * 0.45F, 83 / 455.0F * 0.45F, 13 / 455.0F * 0.45F);
     }
 
     @Override
@@ -48,7 +53,7 @@ public class WorldProviderVenus extends WorldProviderSpace implements IGalacticr
     @Override
     public long getDayLength()
     {
-        return 24000L;
+        return 5400000L;
     }
 
     @Override

@@ -2,6 +2,7 @@ package micdoodle8.mods.galacticraft.planets.mars;
 
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.*;
+import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.common.registry.EntityRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.LanguageRegistry;
@@ -292,5 +293,11 @@ public class MarsModule implements IPlanetsModule
     public void syncConfig()
     {
         ConfigManagerMars.syncConfig(false);
+    }
+
+    @Override
+    public void onServerTick(TickEvent.ServerTickEvent event)
+    {
+
     }
 }

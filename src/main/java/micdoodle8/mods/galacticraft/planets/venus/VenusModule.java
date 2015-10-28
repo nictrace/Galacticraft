@@ -2,6 +2,7 @@ package micdoodle8.mods.galacticraft.planets.venus;
 
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.*;
+import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.common.registry.EntityRegistry;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 import cpw.mods.fml.relauncher.Side;
@@ -10,6 +11,7 @@ import micdoodle8.mods.galacticraft.api.galaxies.CelestialBody;
 import micdoodle8.mods.galacticraft.api.galaxies.GalaxyRegistry;
 import micdoodle8.mods.galacticraft.api.galaxies.Planet;
 import micdoodle8.mods.galacticraft.api.recipe.CompressorRecipes;
+import micdoodle8.mods.galacticraft.api.vector.Vector3;
 import micdoodle8.mods.galacticraft.api.world.IAtmosphericGas;
 import micdoodle8.mods.galacticraft.core.GalacticraftCore;
 import micdoodle8.mods.galacticraft.core.items.GCItems;
@@ -30,8 +32,10 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.material.MaterialLiquid;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
+import net.minecraft.entity.effect.EntityLightningBolt;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
@@ -199,5 +203,43 @@ public class VenusModule implements IPlanetsModule
     public void syncConfig()
     {
         ConfigManagerVenus.syncConfig(false);
+    }
+
+    public static long tickCount = 0;
+
+    @Override
+    public void onServerTick(TickEvent.ServerTickEvent event)
+    {
+        MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
+        //Prevent issues when clients switch to LAN servers
+        if (server == null) return;
+
+        if (event.phase == TickEvent.Phase.START)
+        {
+            if (tickCount % 25 == 0)
+            {
+                World worldVenus = FMLCommonHandler.instance().getMinecraftServerInstance().worldServerForDimension(ConfigManagerVenus.dimensionIDVenus);
+
+                if (worldVenus != null)
+                {
+                    for (Object o : worldVenus.playerEntities)
+                    {
+                        if (o instanceof EntityPlayer)
+                        {
+                            EntityPlayer player = (EntityPlayer) o;
+                            double posX = player.posX + Math.random() * 500 - 250;
+                            double posZ = player.posZ + Math.random() * 500 - 250;
+                            EntityLightningBolt bolt = new EntityLightningBolt(worldVenus, (int)posX, 125, (int)posZ);
+                            bolt.renderDistanceWeight *= 5;
+                            worldVenus.addWeatherEffect(bolt);
+                        }
+                    }
+                }
+            }
+        }
+        else
+        {
+            tickCount++;
+        }
     }
 }
