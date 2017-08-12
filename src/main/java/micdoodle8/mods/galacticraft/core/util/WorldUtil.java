@@ -14,7 +14,10 @@ import micdoodle8.mods.galacticraft.api.GalacticraftRegistry;
 import micdoodle8.mods.galacticraft.api.entity.IAntiGrav;
 import micdoodle8.mods.galacticraft.api.entity.IWorldTransferCallback;
 import micdoodle8.mods.galacticraft.api.galaxies.CelestialBody;
+import micdoodle8.mods.galacticraft.api.galaxies.CelestialBody.ScalableDistance;
 import micdoodle8.mods.galacticraft.api.galaxies.GalaxyRegistry;
+import micdoodle8.mods.galacticraft.api.galaxies.Moon;
+import micdoodle8.mods.galacticraft.api.galaxies.Planet;
 import micdoodle8.mods.galacticraft.api.galaxies.Satellite;
 import micdoodle8.mods.galacticraft.api.item.IArmorGravity;
 import micdoodle8.mods.galacticraft.api.prefab.entity.EntityAutoRocket;
@@ -411,31 +414,33 @@ public class WorldUtil
     public static List<Integer> getPossibleDimensionsForSpaceshipTier(int tier, EntityPlayerMP playerBase)
     {
         List<Integer> temp = new ArrayList<Integer>();
+        Integer departureId=0;
+        CelestialBody departure_cb=null;
+        if(playerBase.worldObj.provider != null){
+        	departureId = playerBase.worldObj.provider.dimensionId;
+            departure_cb = getReachableCelestialBodiesForDimensionID(departureId);
+        }
 
         if (!ConfigManagerCore.disableRocketsToOverworld)
         {
-            temp.add(ConfigManagerCore.idDimensionOverworld);
+            if(playerBase.worldObj.provider instanceof IGalacticraftWorldProvider){
+            	if (((IGalacticraftWorldProvider)(playerBase.worldObj.provider)).canSpaceshipTierPass(tier)){
+            		temp.add(ConfigManagerCore.idDimensionOverworld);
+            	}
+            }
+            else{ // if start point is another mod's dimension - overworld enabled
+            	temp.add(ConfigManagerCore.idDimensionOverworld);
+            }
         }
 
         for (Integer element : WorldUtil.registeredPlanets)
         {
-        	if (element == ConfigManagerCore.idDimensionOverworld) continue;
-        	WorldProvider provider = WorldUtil.getProviderForDimensionServer(element);
+            if (element == ConfigManagerCore.idDimensionOverworld) continue;
 
-            if (provider != null)
-            {
-                if (provider instanceof IGalacticraftWorldProvider)
-                {
-                    if (((IGalacticraftWorldProvider) provider).canSpaceshipTierPass(tier))
-                    {
-                        temp.add(element);
-                    }
-                }
-                else
-                {
-                    temp.add(element);
-                }
-            }
+            CelestialBody target_cb = getReachableCelestialBodiesForDimensionID(element);
+            int relativеTier = getRelativeTier(departure_cb, target_cb);
+            if(tier >= relativеTier)
+        	temp.add(element);
         }
 
         for (Integer element : WorldUtil.registeredSpaceStations.keySet())
@@ -489,6 +494,64 @@ public class WorldUtil
         return temp;
     }
 
+    private static int getRelativeTier(CelestialBody departure_cb, CelestialBody target_cb) {
+	int out = 1;
+
+	if(departure_cb.equals(target_cb)) return 1;
+		
+	if(departure_cb instanceof Planet){
+	    if(target_cb instanceof Planet)
+		out = Math.max(departure_cb.getTierRequirement(), target_cb.getTierRequirement());
+	    else{
+		// planet - moon, check for relations
+		if(!departure_cb.equals(((Moon)target_cb).getParentPlanet())){
+		    out = Math.max(departure_cb.getTierRequirement(), target_cb.getTierRequirement());
+		}
+		else{	// relations detected
+		    int index = getMoonIndex((Moon)target_cb);
+		    if(index < 2) return 1;
+		    else return 2;
+		}
+	    }
+	}
+	else{
+	    if(target_cb instanceof Planet){
+		if(!target_cb.equals(((Moon)departure_cb).getParentPlanet())){
+		    out = Math.max(departure_cb.getTierRequirement(), target_cb.getTierRequirement());
+		}
+		else{ // relation detected
+		    int index = getMoonIndex((Moon)departure_cb);
+		    if(index < 2) return 1;
+		    else return 2;
+		}
+	    }
+	    else{	// two moons
+		if(((Moon)departure_cb).getParentPlanet().equals(((Moon)target_cb).getParentPlanet())){
+		    int max_index = Math.max(getMoonIndex((Moon)departure_cb), getMoonIndex((Moon)target_cb));
+			if(max_index < 2) return 1;
+			else return 2;
+		    }
+		    else out = Math.max(departure_cb.getTierRequirement(), target_cb.getTierRequirement());
+		}
+	    }
+	    return out;
+	}
+
+	// zero-based index of a moon
+	private static int getMoonIndex(Moon toy) {
+	    int index = 0;
+	
+	    List<Moon> moons = GalaxyRegistry.getMoonsForPlanet(toy.getParentPlanet());
+	    ScalableDistance mysd = toy.getRelativeDistanceFromCenter();
+	    for(Moon next: moons){
+		if(!next.equals(toy)){ // not the same
+		    ScalableDistance sd = next.getRelativeDistanceFromCenter();
+		    if(sd.unScaledDistance < mysd.unScaledDistance) index++;
+		}
+	    }
+	    return index;
+	}
+	
     public static CelestialBody getReachableCelestialBodiesForDimensionID(int id)
     {
         List<CelestialBody> celestialBodyList = Lists.newArrayList();
