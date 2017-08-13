@@ -128,6 +128,7 @@ public class EntityParachest extends Entity
                     }
                     else{} // not replaceable
                 }
+
                 if (this.cargo != null)
                 {
                 	this.worldObj.setBlockToAir(MathHelper.floor_double(this.posX), 254, MathHelper.floor_double(this.posZ));
