@@ -3,6 +3,7 @@ package micdoodle8.mods.galacticraft.core.entities;
 import micdoodle8.mods.galacticraft.core.GalacticraftCore;
 import micdoodle8.mods.galacticraft.core.blocks.GCBlocks;
 import micdoodle8.mods.galacticraft.core.tile.TileEntityParaChest;
+import micdoodle8.mods.galacticraft.core.util.GCLog;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
@@ -94,18 +95,21 @@ public class EntityParachest extends Entity
         {
             if (this.onGround && !this.worldObj.isRemote)
             {
-                for (int i = 0; i < 100; i++)
+                for (int i = 0; i < 200; i++)
                 {
                     final int x = MathHelper.floor_double(this.posX);
                     final int y = MathHelper.floor_double(this.posY);
                     final int z = MathHelper.floor_double(this.posZ);
-
+                    
+                    if(y + i > 254) break;
+                    
                     Block block = this.worldObj.getBlock(x, y + i, z);
 
                     if (block.getMaterial().isReplaceable())
                     {
                         if (this.placeChest(x, y + i, z))
                         {
+                        	
                             this.setDead();
                             return;
                         }
@@ -114,21 +118,34 @@ public class EntityParachest extends Entity
                             for (final ItemStack stack : this.cargo)
                             {
                                 final EntityItem e = new EntityItem(this.worldObj, this.posX, this.posY, this.posZ, stack);
+                                GCLog.info("spawning at y = " + this.posY);
                                 this.worldObj.spawnEntityInWorld(e);
                             }
-
+                            this.cargo = null;
+                            this.setDead();
                             return;
                         }
                     }
+                    else{} // not replaceable
                 }
-
                 if (this.cargo != null)
                 {
-                    for (final ItemStack stack : this.cargo)
+                	this.worldObj.setBlockToAir(MathHelper.floor_double(this.posX), 254, MathHelper.floor_double(this.posZ));
+                	this.placeChest(MathHelper.floor_double(this.posX), 254, MathHelper.floor_double(this.posZ));
+                	/*
+                    for (ItemStack stack : this.cargo)
                     {
-                        final EntityItem e = new EntityItem(this.worldObj, this.posX, this.posY, this.posZ, stack);
-                        this.worldObj.spawnEntityInWorld(e);
+                    	EntityItem e = null;
+                    	if(stack != null){
+                        	e = new EntityItem(this.worldObj, this.posX + 1.0, this.posY, this.posZ + 1.0, stack);
+
+                       		GCLog.info("spawning " + stack.getUnlocalizedName()+" " + stack.stackSize + " items at " + this.posX + "," + this.posY + "," + this.posZ);
+                       		if(!this.worldObj.spawnEntityInWorld(e)) GCLog.info("spawn unsuccessible...");
+                    	}
                     }
+                    this.cargo = null;
+                    */
+                    this.setDead();	// despawn chest
                 }
             }
             else
@@ -157,12 +174,10 @@ public class EntityParachest extends Entity
             }
 
             chest.fuelTank.fill(FluidRegistry.getFluidStack(GalacticraftCore.fluidFuel.getName().toLowerCase(), this.fuelLevel), true);
-
+            this.cargo = null;
+            this.placedChest = true;
             return true;
         }
-
-        this.placedChest = true;
-
-        return true;
+        return false;
     }
 }

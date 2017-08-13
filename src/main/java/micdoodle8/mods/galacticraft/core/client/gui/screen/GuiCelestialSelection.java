@@ -1461,6 +1461,7 @@ public class GuiCelestialSelection extends GuiScreen
         this.zLevel = 0.0F;
         boolean handledSliderPos = false;
 
+        // Если карта открыта из ракеты?
         if (this.selectionState == EnumSelectionState.PROFILE)
         {
             this.mc.renderEngine.bindTexture(GuiCelestialSelection.guiMain0);
@@ -1566,7 +1567,7 @@ public class GuiCelestialSelection extends GuiScreen
 //			this.drawRectD(posX2 + 16.5, menuTopLeft + 13, posX + 131, menuTopLeft + 14, GCCoreUtil.to32BitColor(120, 0, (int) (0.6F * 255), 255));
             }
         }
-        else
+        else	// если карта открыта без рактеы?
         {
             String str;
             // Catalog:
@@ -1925,6 +1926,7 @@ public class GuiCelestialSelection extends GuiScreen
                 // Top bar title:
                 this.mc.renderEngine.bindTexture(GuiCelestialSelection.guiMain0);
                 GL11.glColor4f(0.0F, 0.6F, 1.0F, 1);
+                // если это чья-то станция 
                 if (this.selectedBody instanceof Satellite)
                 {
                     if (this.selectedStationOwner.length() == 0 || !this.selectedStationOwner.equalsIgnoreCase(this.mc.thePlayer.getGameProfile().getName()))
@@ -1933,6 +1935,7 @@ public class GuiCelestialSelection extends GuiScreen
                     }
                     else
                     {
+                    	// это наша станция, цвет зеленый
                         GL11.glColor4f(0.0F, 1.0F, 0.0F, 1);
                     }
                     this.drawTexturedModalRect(width / 2 - 47, GuiCelestialSelection.BORDER_WIDTH + GuiCelestialSelection.BORDER_EDGE_WIDTH, 94, 11, 0, 414, 188, 22, false, false);
@@ -1944,6 +1947,7 @@ public class GuiCelestialSelection extends GuiScreen
                 if (this.selectedBody.getTierRequirement() >= 0 && (!(this.selectedBody instanceof Satellite)))
                 {
                     boolean canReach;
+                    //possibleBodies - массив, в который как-то попадают все доступные тебе планеты
                     if (!this.selectedBody.getReachable() || (this.possibleBodies != null && !this.possibleBodies.contains(this.selectedBody)))
                     {
                         canReach = false;
@@ -1956,6 +1960,7 @@ public class GuiCelestialSelection extends GuiScreen
                     }
                     this.drawTexturedModalRect(width / 2 - 30, GuiCelestialSelection.BORDER_WIDTH + GuiCelestialSelection.BORDER_EDGE_WIDTH + 11, 30, 11, 0, 414, 60, 22, false, false);
                     this.drawTexturedModalRect(width / 2, GuiCelestialSelection.BORDER_WIDTH + GuiCelestialSelection.BORDER_EDGE_WIDTH + 11, 30, 11, 128, 414, 60, 22, false, false);
+                    // отобразить тир в заголовке окна
                     str = GCCoreUtil.translateWithFormat("gui.message.tier.name", this.selectedBody.getTierRequirement() == 0 ? "?" : this.selectedBody.getTierRequirement());
                     this.fontRendererObj.drawString(str, width / 2 - this.fontRendererObj.getStringWidth(str) / 2, GuiCelestialSelection.BORDER_WIDTH + GuiCelestialSelection.BORDER_EDGE_WIDTH + 13, canReach ? ColorUtil.to32BitColor(255, 140, 140, 140) : ColorUtil.to32BitColor(255, 255, 100, 100));
                 }
