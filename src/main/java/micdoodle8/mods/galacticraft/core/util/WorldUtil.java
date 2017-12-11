@@ -1737,7 +1737,7 @@ private static int getRelativeTier(CelestialBody departure_cb, CelestialBody tar
 	        if (generatorTCAuraNodes != null && generateTCAuraNodes != null) System.out.println("Whitelisting ThaumCraft aura node generation on planets.");
         }
 
-        if (generatorGCGreg != null || generatorCoFH != null || generatorDenseOres != null || generatorTCAuraNodes != null || generatorAE2meteors != null)
+        if (generatorGCGreg != null || generatorCoFH != null || generatorDenseOres != null || generatorTCAuraNodes != null || generatorAE2meteors != null || generatorCOG != null)
         {
         	try {
 	            long worldSeed = world.getSeed();
