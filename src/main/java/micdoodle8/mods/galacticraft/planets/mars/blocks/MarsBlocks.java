@@ -61,8 +61,8 @@ public class MarsBlocks
 
     public static void setHarvestLevels()
     {
-        setHarvestLevel(MarsBlocks.marsBlock, "pickaxe", 2, 0); //Copper ore
-        setHarvestLevel(MarsBlocks.marsBlock, "pickaxe", 2, 1); //Tin ore
+        setHarvestLevel(MarsBlocks.marsBlock, "pickaxe", 1, 0); //Copper ore
+        setHarvestLevel(MarsBlocks.marsBlock, "pickaxe", 1, 1); //Tin ore
         setHarvestLevel(MarsBlocks.marsBlock, "pickaxe", 3, 2); //Desh ore
         setHarvestLevel(MarsBlocks.marsBlock, "pickaxe", 1, 3); //Iron ore
         setHarvestLevel(MarsBlocks.marsBlock, "pickaxe", 0, 4); //Cobblestone
@@ -107,5 +107,6 @@ public class MarsBlocks
         OreDictionary.registerOre("oreTin", new ItemStack(MarsBlocks.marsBlock, 1, 1));
         OreDictionary.registerOre("oreIron", new ItemStack(MarsBlocks.marsBlock, 1, 3));
         OreDictionary.registerOre("oreDesh", new ItemStack(MarsBlocks.marsBlock, 1, 2));
+        OreDictionary.registerOre("blockDesh", new ItemStack(MarsBlocks.marsBlock, 1, 8));
     }
 }

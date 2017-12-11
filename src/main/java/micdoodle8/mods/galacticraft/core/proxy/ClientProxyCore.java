@@ -48,6 +48,7 @@ import micdoodle8.mods.galacticraft.core.tick.TickHandlerClient;
 import micdoodle8.mods.galacticraft.core.tile.*;
 import micdoodle8.mods.galacticraft.core.util.ClientUtil;
 import micdoodle8.mods.galacticraft.core.util.CompatibilityManager;
+import micdoodle8.mods.galacticraft.core.util.ConfigManagerCore;
 import micdoodle8.mods.galacticraft.core.util.GCCoreUtil;
 import micdoodle8.mods.galacticraft.core.wrappers.BlockMetaList;
 import micdoodle8.mods.galacticraft.core.wrappers.ModelTransformWrapper;
@@ -100,7 +101,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.*;
@@ -588,6 +588,7 @@ public class ClientProxyCore extends CommonProxyCore
         ClientUtil.registerBlockJson(Constants.TEXTURE_PREFIX, GCBlocks.basicBlock, 10, "block_tin_gc");
         ClientUtil.registerBlockJson(Constants.TEXTURE_PREFIX, GCBlocks.basicBlock, 11, "block_aluminum_gc");
         ClientUtil.registerBlockJson(Constants.TEXTURE_PREFIX, GCBlocks.basicBlock, 12, "block_meteoric_iron_gc");
+        ClientUtil.registerBlockJson(Constants.TEXTURE_PREFIX, GCBlocks.basicBlock, 13, "block_silicon_gc");
         ClientUtil.registerBlockJson(Constants.TEXTURE_PREFIX, GCBlocks.airLockFrame, 0, "air_lock_frame");
         ClientUtil.registerBlockJson(Constants.TEXTURE_PREFIX, GCBlocks.airLockFrame, 1, "air_lock_controller");
         ClientUtil.registerBlockJson(Constants.TEXTURE_PREFIX, GCBlocks.airLockSeal, 0, "air_lock_seal");
@@ -676,7 +677,7 @@ public class ClientProxyCore extends CommonProxyCore
     {
         //BlockItem variants: 
         addCoreVariant("air_lock_frame", "air_lock_frame", "air_lock_controller");
-        addCoreVariant("basic_block_core", "deco_block_0", "deco_block_1", "ore_copper_gc", "ore_tin_gc", "ore_aluminum_gc", "ore_silicon", "block_copper_gc", "block_tin_gc", "block_aluminum_gc", "block_meteoric_iron_gc");
+        addCoreVariant("basic_block_core", "deco_block_0", "deco_block_1", "ore_copper_gc", "ore_tin_gc", "ore_aluminum_gc", "ore_silicon", "block_copper_gc", "block_tin_gc", "block_aluminum_gc", "block_meteoric_iron_gc", "block_silicon_gc");
         addCoreVariant("air_lock_frame", "air_lock_frame", "air_lock_controller");
         addCoreVariant("landing_pad", "landing_pad", "buggy_pad");
         addCoreVariant("oxygen_compressor", "oxygen_compressor", "oxygen_decompressor");
@@ -733,10 +734,10 @@ public class ClientProxyCore extends CommonProxyCore
         {
             capeListUrl = new URL("https://raw.github.com/micdoodle8/Galacticraft/master/capes.txt");
         }
-        catch (MalformedURLException e)
+        catch (IOException e)
         {
             FMLLog.severe("Error getting capes list URL");
-            e.printStackTrace();
+            if (ConfigManagerCore.enableDebug) e.printStackTrace();
             return;
         }
 
@@ -748,7 +749,7 @@ public class ClientProxyCore extends CommonProxyCore
         }
         catch (IOException e)
         {
-            e.printStackTrace();
+            if (ConfigManagerCore.enableDebug) e.printStackTrace();
             return;
         }
 
@@ -762,7 +763,7 @@ public class ClientProxyCore extends CommonProxyCore
         }
         catch (IOException e)
         {
-            e.printStackTrace();
+            if (ConfigManagerCore.enableDebug) e.printStackTrace();
             return;
         }
 
@@ -784,7 +785,7 @@ public class ClientProxyCore extends CommonProxyCore
         }
         catch (IOException e)
         {
-            e.printStackTrace();
+            if (ConfigManagerCore.enableDebug) e.printStackTrace();
         }
         finally
         {
@@ -794,7 +795,7 @@ public class ClientProxyCore extends CommonProxyCore
             }
             catch (IOException e)
             {
-                e.printStackTrace();
+                if (ConfigManagerCore.enableDebug) e.printStackTrace();
             }
         }
     }
