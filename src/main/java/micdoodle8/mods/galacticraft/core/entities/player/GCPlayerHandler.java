@@ -804,7 +804,7 @@ public class GCPlayerHandler
 	                		break;
 	                	}
 	                }
-	                if (torchItem != null)
+	                if (torchItem != null && player.inventory.currentItem >= 0 && player.inventory.currentItem < player.inventory.mainInventory.length)
 	                	player.inventory.mainInventory[player.inventory.currentItem] = new ItemStack(torchItem, theCurrentItem.stackSize, 0);
 	            }
 	        }
@@ -815,7 +815,7 @@ public class GCPlayerHandler
 	            {
 	                //Get overworld torch for this space torch
 	                Item torchItem = torchItems.get(theCurrentItem.getItem());
-	                if (torchItem != null)
+	                if (torchItem != null && player.inventory.currentItem >= 0 && player.inventory.currentItem < player.inventory.mainInventory.length)
 	                	player.inventory.mainInventory[player.inventory.currentItem] = new ItemStack(torchItem, theCurrentItem.stackSize, 0);
 	            }
 	        }
