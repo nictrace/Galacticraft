@@ -1251,15 +1251,19 @@ public class GCPlayerHandler
             {
                 if (GCPlayer.chestSpawnVector != null)
                 {
+                	GCLog.info("chestSpawnVector not null");
                     EntityParachest chest = new EntityParachest(player.worldObj, GCPlayer.rocketStacks, GCPlayer.fuelLevel);
+                    GCLog.info("chest created in world " + player.worldObj.provider.getDimensionName());
 
                     chest.setPosition(GCPlayer.chestSpawnVector.x, GCPlayer.chestSpawnVector.y, GCPlayer.chestSpawnVector.z);
 
                     if (!player.worldObj.isRemote)
                     {
-                        player.worldObj.spawnEntityInWorld(chest);
+                        boolean rez = player.worldObj.spawnEntityInWorld(chest);
+                        GCLog.info("Spawing result is " + rez);
                     }
                 }
+                else GCLog.info("chestSpawnVector is null!");
             }
         }
 

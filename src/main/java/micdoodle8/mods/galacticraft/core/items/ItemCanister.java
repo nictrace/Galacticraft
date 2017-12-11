@@ -4,6 +4,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import micdoodle8.mods.galacticraft.core.GalacticraftCore;
 import micdoodle8.mods.galacticraft.core.proxy.ClientProxyCore;
+import micdoodle8.mods.galacticraft.core.util.GCLog;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.EnumRarity;
@@ -58,7 +59,14 @@ public class ItemCanister extends Item
     @Override
     public String getUnlocalizedName(ItemStack itemStack)
     {
-        return this.getUnlocalizedName() + "." + ItemCanister.names[itemStack.getItemDamage()];
+    	int dmg;
+    	dmg = itemStack.getItemDamage();
+    	if(dmg > 1){
+    		GCLog.severe("getUnlocalizedName() error! dmg = " + dmg + " [" +itemStack.getClass().toString() + "]");
+    		dmg = 0;
+   		
+    	}
+        return this.getUnlocalizedName() + "." + ItemCanister.names[dmg];
     }
 
     @Override

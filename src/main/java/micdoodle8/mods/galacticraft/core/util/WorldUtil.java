@@ -101,6 +101,7 @@ public class WorldUtil
     private static IWorldGenerator generatorDenseOres = null;
     private static IWorldGenerator generatorTCAuraNodes = null;
     private static IWorldGenerator generatorAE2meteors = null;
+    private static IWorldGenerator generatorCOG = null;
     private static Method generateTCAuraNodes = null;
     private static boolean generatorsInitialised = false;
 	
@@ -1293,10 +1294,14 @@ private static int getRelativeTier(CelestialBody departure_cb, CelestialBody tar
                     }
                 }
             }
-
+            if(transferInv) GCLog.info("transferInv OK");
+            GCLog.info("chestSpawnCooldown =" + playerStats.chestSpawnCooldown);
             if (transferInv && playerStats.chestSpawnCooldown == 0)
             {
                 playerStats.chestSpawnVector = type.getParaChestSpawnLocation((WorldServer) entity.worldObj, player, new Random());
+                if(playerStats.chestSpawnVector != null)
+                	GCLog.info("chestSpawnVector = (" + playerStats.chestSpawnVector.intX() + "," + playerStats.chestSpawnVector.intY() + "," + playerStats.chestSpawnVector.intY() + "," + playerStats.chestSpawnVector.intZ()+")");
+                else GCLog.info("chestSpawnVector is NUL");
                 playerStats.chestSpawnCooldown = 200;
             }
         }
@@ -1609,7 +1614,21 @@ private static int getRelativeTier(CelestialBody departure_cb, CelestialBody tar
         if (!generatorsInitialised)
         {
         	generatorsInitialised = true;
-        			
+        	try {
+        		Class cog = Class.forName("CustomOreGen.FMLInterface");
+        		if(cog != null) {
+		        	final Field regField = Class.forName("cpw.mods.fml.common.registry.GameRegistry").getDeclaredField("worldGenerators");
+		            regField.setAccessible(true);
+		        	Set<IWorldGenerator> registeredGenerators = (Set<IWorldGenerator>) regField.get(null);
+		        	for (IWorldGenerator gen : registeredGenerators)
+		        		if (cog.isInstance(gen)) {
+		        			generatorCOG = gen;
+		        			break;
+		        		}
+        		}
+        	} catch (Exception e) {
+        		GCLog.severe("Error in COG's worldgen.  This is NOT a Galacticraft bug.");
+        	}
         	try {
 	        	Class GCGreg = Class.forName("bloodasp.galacticgreg.GT_Worldgenerator_Space");
 	        	if (GCGreg != null)
@@ -1710,7 +1729,7 @@ private static int getRelativeTier(CelestialBody departure_cb, CelestialBody tar
 	        	}
 
 	        } catch (Exception e) { }
-	        
+	        if (generatorCOG != null) System.out.println("Whitelisting CustomOreGen on planets.");	        
 	        if (generatorGCGreg != null) System.out.println("Whitelisting GalacticGreg oregen on planets.");
 	        if (generatorCoFH != null) System.out.println("Whitelisting CoFHCore custom oregen on planets.");
 	        if (generatorDenseOres != null) System.out.println("Whitelisting Dense Ores oregen on planets.");
@@ -1727,7 +1746,8 @@ private static int getRelativeTier(CelestialBody departure_cb, CelestialBody tar
 	            long zSeed = fmlRandom.nextLong() >> 2 + 1L;
 	            long chunkSeed = (xSeed * chunkX + zSeed * chunkZ) ^ worldSeed;
 	            fmlRandom.setSeed(chunkSeed);
-	            
+
+	            if (generatorCOG != null) generatorCOG.generate(fmlRandom, chunkX, chunkZ, world, chunkGenerator, chunkProvider);
 	            if (generatorCoFH != null) generatorCoFH.generate(fmlRandom, chunkX, chunkZ, world, chunkGenerator, chunkProvider);
 	            if (generatorDenseOres != null) generatorDenseOres.generate(fmlRandom, chunkX, chunkZ, world, chunkGenerator, chunkProvider);
 	            if (generatorGCGreg != null) generatorGCGreg.generate(fmlRandom, chunkX, chunkZ, world, chunkGenerator, chunkProvider);
