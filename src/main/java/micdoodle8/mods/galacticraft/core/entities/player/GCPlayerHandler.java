@@ -1260,19 +1260,21 @@ public class GCPlayerHandler
             {
                 if (GCPlayer.chestSpawnVector != null)
                 {
-                	GCLog.info("chestSpawnVector not null");
                     EntityParachest chest = new EntityParachest(player.worldObj, GCPlayer.rocketStacks, GCPlayer.fuelLevel);
-                    GCLog.info("chest created in world " + player.worldObj.provider.getDimensionName());
-
                     chest.setPosition(GCPlayer.chestSpawnVector.x, GCPlayer.chestSpawnVector.y, GCPlayer.chestSpawnVector.z);
 
                     if (!player.worldObj.isRemote)
                     {
-                        boolean rez = player.worldObj.spawnEntityInWorld(chest);
-                        GCLog.info("Spawing result is " + rez);
+						if(player.worldObj.isAirBlock(GCPlayer.chestSpawnVector.x, GCPlayer.chestSpawnVector.y, GCPlayer.chestSpawnVector.z))
+                            player.worldObj.spawnEntityInWorld(chest);
+						else
+							for(ItemStack stacks : GCPlayer.rocketStacks)
+							{
+								EntityItem entityitem = new EntityItem(player.worldObj, GCPlayer.chestSpawnVector.x, GCPlayer.chestSpawnVector.y + 1.0D, GCPlayer.chestSpawnVector.z, stacks);
+								player.worldObj.spawnEntityInWorld(entityitem);
+							}
                     }
                 }
-                else GCLog.info("chestSpawnVector is null!");
             }
         }
 
