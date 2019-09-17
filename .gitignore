@@ -14,6 +14,9 @@
 /reobf/*
 /runtime/*
 /temp/*
+/temporary/*
+/gradle/*
+/libs/*
 LICENSE.txt
 CHANGELOG
 

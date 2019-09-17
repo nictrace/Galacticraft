@@ -1,24 +1,34 @@
 package micdoodle8.mods.galacticraft.core.entities;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import micdoodle8.mods.galacticraft.api.entity.IEntityBreathable;
+import micdoodle8.mods.galacticraft.core.blocks.GCBlocks;
+import micdoodle8.mods.galacticraft.core.items.GCItems;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.*;
 import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
+import net.minecraft.util.Tuple;
 import net.minecraft.village.MerchantRecipe;
 import net.minecraft.village.MerchantRecipeList;
 import net.minecraft.village.Village;
 import net.minecraft.world.World;
 
-public class EntityAlienVillager extends EntityAgeable implements IEntityBreathable
+public class EntityAlienVillager extends EntityAgeable implements IEntityBreathable, IMerchant
 {
     private int randomTickDivider;
     private boolean isMating;
@@ -28,6 +38,10 @@ public class EntityAlienVillager extends EntityAgeable implements IEntityBreatha
     private MerchantRecipeList buyingList;
     private int wealth;
     private boolean field_82190_bM;
+    private float field_82191_bN;
+    /** Selling list of Villagers items. */
+    public static final Map<Item, Tuple> villagersSellingList = new HashMap<Item, Tuple>();
+    
 
     public EntityAlienVillager(World par1World)
     {
@@ -280,7 +294,7 @@ public class EntityAlienVillager extends EntityAgeable implements IEntityBreatha
     {
         par1MerchantRecipe.incrementToolUses();
 
-        if (par1MerchantRecipe.getItemToBuy().getItem() == Items.emerald)
+        if (par1MerchantRecipe.getItemToBuy().getItem() == GCItems.meteoricIronRaw)
         {
             this.wealth += par1MerchantRecipe.getItemToBuy().stackSize;
         }
@@ -319,12 +333,13 @@ public class EntityAlienVillager extends EntityAgeable implements IEntityBreatha
             this.worldObj.spawnParticle(par1Str, this.posX + this.rand.nextFloat() * this.width * 2.0F - this.width, this.posY + 1.0D + this.rand.nextFloat() * this.height, this.posZ + this.rand.nextFloat() * this.width * 2.0F - this.width, d0, d1, d2);
         }
     }
-
+    
     public void func_82187_q()
     {
         this.field_82190_bM = true;
     }
 
+    // spawn a baby =)
     public EntityAlienVillager func_90012_b(EntityAgeable par1EntityAgeable)
     {
         return new EntityAlienVillager(this.worldObj);
@@ -340,5 +355,109 @@ public class EntityAlienVillager extends EntityAgeable implements IEntityBreatha
     public boolean canBreath()
     {
         return true;
+    }
+    /**
+     * Adjusts the probability of obtaining a given recipe being offered by a villager
+     */
+    private float adjustProbability(float p_82188_1_)
+    {
+        float f1 = p_82188_1_ + this.field_82191_bN;
+        return f1 > 0.9F ? 0.9F - (f1 - 0.9F) : f1;
+    }
+    /**
+     * based on the villagers profession add items, equipment, and recipies adds par1 random items to the list of things
+     * that the villager wants to buy. (at most 1 of each wanted type is added)
+     */
+    private void addDefaultEquipmentAndRecipies(int p_70950_1_)
+    {
+        if (this.buyingList != null) {
+        	// корень из количества рецептов деленный на 5 =)
+            //this.field_82191_bN = MathHelper.sqrt_float((float)this.buyingList.size()) * 0.2F;
+        }
+        else {
+            //this.field_82191_bN = 0.0F;
+        }
+
+        MerchantRecipeList merchantrecipelist;
+        merchantrecipelist = new MerchantRecipeList(); // local recipes
+        func_146091_a(merchantrecipelist, GCItems.fuelCanister, this.rand, this.adjustProbability(0.5F));
+        func_146091_a(merchantrecipelist, GCItems.sensorGlasses, this.rand, this.adjustProbability(0.5F));
+        func_146091_a(merchantrecipelist, GCItems.partNoseCone, this.rand, this.adjustProbability(0.1F));
+        func_146091_a(merchantrecipelist, GCItems.heavyPlatingTier1, this.rand, this.adjustProbability(0.3F));
+        func_146091_a(merchantrecipelist, GCItems.oxMask, this.rand, this.adjustProbability(0.3F));
+        func_146091_a(merchantrecipelist, Item.getItemFromBlock(GCBlocks.glowstoneTorch), this.rand, this.adjustProbability(0.3F));
+        func_146091_a(merchantrecipelist, Item.getItemFromBlock(GCBlocks.airLockSeal), this.rand, this.adjustProbability(0.3F));
+        func_146091_a(merchantrecipelist, GCItems.oxygenConcentrator, this.rand, this.adjustProbability(0.3F));
+        func_146091_a(merchantrecipelist, GCItems.oxygenFan, this.rand, this.adjustProbability(0.3F));
+        func_146091_a(merchantrecipelist, GCItems.oxygenGear, this.rand, this.adjustProbability(0.3F));
+        func_146091_a(merchantrecipelist, GCItems.oxygenVent, this.rand, this.adjustProbability(0.3F));
+        func_146091_a(merchantrecipelist, GCItems.basicItem, this.rand, this.adjustProbability(0.3F));
+        func_146091_a(merchantrecipelist, Items.ender_pearl, this.rand, this.adjustProbability(0.3F));
+        func_146091_a(merchantrecipelist, Items.ender_eye, this.rand, this.adjustProbability(0.3F));
+        func_146091_a(merchantrecipelist, GCItems.oxTankHeavy, this.rand, this.adjustProbability(0.3F));
+        func_146091_a(merchantrecipelist, GCItems.oxTankMedium, this.rand, this.adjustProbability(0.3F));
+        func_146091_a(merchantrecipelist, GCItems.oxTankLight, this.rand, this.adjustProbability(0.3F));
+        func_146091_a(merchantrecipelist, Item.getItemFromBlock(GCBlocks.solarPanel), this.rand, this.adjustProbability(0.3F));
+    }
+    
+	@Override
+	public MerchantRecipeList getRecipes(EntityPlayer p_70934_1_) {
+		// Show list of recipes
+        if (this.buyingList == null)
+        {
+            this.addDefaultEquipmentAndRecipies(1);
+        }
+        return this.buyingList;
+	}
+
+	@Override
+	public void setRecipes(MerchantRecipeList p_70930_1_) {
+		// Set list of recipes
+		
+	}
+    public static void func_146091_a(MerchantRecipeList p_146091_0_, Item p_146091_1_, Random p_146091_2_, float p_146091_3_)
+    {
+        if (p_146091_2_.nextFloat() < p_146091_3_)
+        {
+            p_146091_0_.add(new MerchantRecipe(func_146088_a(p_146091_1_, p_146091_2_), GCItems.meteoricIronRaw));
+        }
+    }
+    private static ItemStack func_146088_a(Item p_146088_0_, Random p_146088_1_)
+    {
+        return new ItemStack(p_146088_0_, func_146092_b(p_146088_0_, p_146088_1_), 0);
+    }
+    // get quantity of goods
+    private static int func_146092_b(Item p_146092_0_, Random p_146092_1_)
+    {
+        Tuple tuple = (Tuple)villagersSellingList.get(p_146092_0_);
+        return tuple == null ? 1 : (((Integer)tuple.getFirst()).intValue() >= ((Integer)tuple.getSecond()).intValue() ? ((Integer)tuple.getFirst()).intValue() : ((Integer)tuple.getFirst()).intValue() + p_146092_1_.nextInt(((Integer)tuple.getSecond()).intValue() - ((Integer)tuple.getFirst()).intValue()));
+    }
+
+	@Override
+	public void func_110297_a_(ItemStack p_110297_1_) {
+		// talk "yes" or "no" - not implemented ;)
+	}
+    static {
+    	// item, mimimum to sell, maximum to sell
+        villagersSellingList.put(GCItems.fuelCanister, new Tuple(Integer.valueOf(1), Integer.valueOf(1)));
+        villagersSellingList.put(GCItems.sensorGlasses, new Tuple(Integer.valueOf(1), Integer.valueOf(1)));
+        villagersSellingList.put(GCItems.partNoseCone, new Tuple(Integer.valueOf(1), Integer.valueOf(3)));
+        villagersSellingList.put(GCItems.heavyPlatingTier1, new Tuple(Integer.valueOf(4), Integer.valueOf(16)));
+        villagersSellingList.put(GCItems.oxMask, new Tuple(Integer.valueOf(1), Integer.valueOf(1)));
+        villagersSellingList.put(Item.getItemFromBlock(GCBlocks.glowstoneTorch), new Tuple(Integer.valueOf(12), Integer.valueOf(32)));
+        villagersSellingList.put(Item.getItemFromBlock(GCBlocks.airLockSeal), new Tuple(Integer.valueOf(1), Integer.valueOf(1)));
+        villagersSellingList.put(Items.ender_pearl, new Tuple(Integer.valueOf(3), Integer.valueOf(4)));
+        villagersSellingList.put(Items.ender_eye, new Tuple(Integer.valueOf(2), Integer.valueOf(3)));
+        villagersSellingList.put(GCItems.oxygenConcentrator, new Tuple(Integer.valueOf(4), Integer.valueOf(16)));
+        villagersSellingList.put(GCItems.oxygenFan, new Tuple(Integer.valueOf(10), Integer.valueOf(18)));
+        villagersSellingList.put(GCItems.oxygenGear, new Tuple(Integer.valueOf(8), Integer.valueOf(18)));
+        villagersSellingList.put(GCItems.oxygenVent, new Tuple(Integer.valueOf(9), Integer.valueOf(13)));
+        villagersSellingList.put(GCItems.oxTankHeavy, new Tuple(Integer.valueOf(1), Integer.valueOf(1)));
+        villagersSellingList.put(GCItems.oxTankMedium, new Tuple(Integer.valueOf(1), Integer.valueOf(2)));
+        villagersSellingList.put(GCItems.oxTankLight, new Tuple(Integer.valueOf(1), Integer.valueOf(4)));
+        villagersSellingList.put(GCItems.basicItem, new Tuple(Integer.valueOf(10), Integer.valueOf(25)));
+        villagersSellingList.put(Item.getItemFromBlock(GCBlocks.oxygenPipe), new Tuple(Integer.valueOf(16), Integer.valueOf(32)));
+        villagersSellingList.put(Item.getItemFromBlock(GCBlocks.aluminumWire), new Tuple(Integer.valueOf(16), Integer.valueOf(32)));
+        villagersSellingList.put(Item.getItemFromBlock(GCBlocks.solarPanel), new Tuple(Integer.valueOf(1), Integer.valueOf(4)));
     }
 }
