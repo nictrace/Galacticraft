@@ -1,5 +1,6 @@
 package micdoodle8.mods.galacticraft.core.entities;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -388,10 +389,9 @@ public class EntityAlienVillager extends EntityAgeable implements IEntityBreatha
      * based on the villagers profession add items, equipment, and recipies adds par1 random items to the list of things
      * that the villager wants to buy. (at most 1 of each wanted type is added)
      */
-    private void addDefaultEquipmentAndRecipies(int p_70950_1_)
+    private void addDefaultEquipmentAndRecipies(int itm_qty)
     {
         if (this.buyingList != null) {
-        	// корень из количества рецептов деленный на 5 =)
             //this.field_82191_bN = MathHelper.sqrt_float((float)this.buyingList.size()) * 0.2F;
         }
         else {
@@ -418,6 +418,23 @@ public class EntityAlienVillager extends EntityAgeable implements IEntityBreatha
         func_146091_a(merchantrecipelist, GCItems.oxTankMedium, this.rand, this.adjustProbability(0.3F));
         func_146091_a(merchantrecipelist, GCItems.oxTankLight, this.rand, this.adjustProbability(0.3F));
         func_146091_a(merchantrecipelist, Item.getItemFromBlock(GCBlocks.solarPanel), this.rand, this.adjustProbability(0.3F));
+        
+        if (merchantrecipelist.isEmpty())
+        {
+            func_146091_a(merchantrecipelist, Items.gold_ingot, this.rand, 1.0F);
+        }
+
+        Collections.shuffle(merchantrecipelist);
+
+        if (this.buyingList == null)
+        {
+            this.buyingList = new MerchantRecipeList();
+        }
+
+        for (int l = 0; l < itm_qty && l < merchantrecipelist.size(); ++l)
+        {
+            this.buyingList.addToListWithCheck((MerchantRecipe)merchantrecipelist.get(l));
+        }
     }
     
 	@Override
