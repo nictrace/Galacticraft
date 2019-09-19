@@ -2,6 +2,7 @@ package micdoodle8.mods.galacticraft.core.entities;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Random;
 
@@ -15,9 +16,6 @@ import micdoodle8.mods.galacticraft.api.entity.IEntityBreathable;
 import micdoodle8.mods.galacticraft.api.entity.IRocketType;
 import micdoodle8.mods.galacticraft.core.blocks.GCBlocks;
 import micdoodle8.mods.galacticraft.core.items.GCItems;
-import micdoodle8.mods.galacticraft.planets.mars.items.MarsItems;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentData;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.*;
 import net.minecraft.entity.monster.IMob;
@@ -27,6 +25,8 @@ import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.potion.Potion;
+import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
@@ -49,6 +49,11 @@ public class EntityAlienVillager extends EntityAgeable implements IEntityBreatha
     private int wealth;
     private boolean isLookingForHome;
     private float skill;
+    private int timeUntilReset;
+    /** Last player to trade with this villager, used for aggressivity. */
+    private String lastBuyingPlayer;
+    /** addDefaultEquipmentAndRecipies is called if this is true */
+    private boolean needsInitilization;
     /** Selling list of Villagers items. */
     public static final Map<Item, Tuple> villagersSellingList = new HashMap<Item, Tuple>();
     
@@ -95,7 +100,8 @@ public class EntityAlienVillager extends EntityAgeable implements IEntityBreatha
     /**
      * main AI tick function, replaces updateEntityActionState
      */
-    @Override
+    @SuppressWarnings("rawtypes")
+	@Override
     protected void updateAITick()
     {
         if (--this.randomTickDivider <= 0)
@@ -120,7 +126,42 @@ public class EntityAlienVillager extends EntityAgeable implements IEntityBreatha
                 }
             }
         }
+        if (!this.isTrading() && this.timeUntilReset > 0)
+        {
+            --this.timeUntilReset;
 
+            if (this.timeUntilReset <= 0)
+            {
+                if (this.needsInitilization)
+                {
+                    if (this.buyingList.size() > 1)
+                    {
+                        Iterator iterator = this.buyingList.iterator();
+
+                        while (iterator.hasNext())
+                        {
+                            MerchantRecipe merchantrecipe = (MerchantRecipe)iterator.next();
+
+                            if (merchantrecipe.isRecipeDisabled())
+                            {
+                                merchantrecipe.func_82783_a(this.rand.nextInt(6) + this.rand.nextInt(6) + 2);
+                            }
+                        }
+                    }
+
+                    this.addDefaultEquipmentAndRecipies(1);
+                    this.needsInitilization = false;
+
+                    if (this.villageObj != null && this.lastBuyingPlayer != null)
+                    {
+                        this.worldObj.setEntityState(this, (byte)14);
+                        this.villageObj.setReputationForPlayer(this.lastBuyingPlayer, 1);
+                    }
+                }
+
+                this.addPotionEffect(new PotionEffect(Potion.regeneration.id, 200, 0));
+            }
+        }
         super.updateAITick();
     }
     /**
@@ -327,6 +368,25 @@ public class EntityAlienVillager extends EntityAgeable implements IEntityBreatha
     public void useRecipe(MerchantRecipe par1MerchantRecipe)
     {
         par1MerchantRecipe.incrementToolUses();
+
+        this.livingSoundTime = -this.getTalkInterval();
+        this.playSound("mob.villager.yes", this.getSoundVolume(), this.getSoundPitch());
+
+        if (par1MerchantRecipe.hasSameIDsAs((MerchantRecipe)this.buyingList.get(this.buyingList.size() - 1)))
+        {
+            this.timeUntilReset = 40;
+            this.needsInitilization = true;
+
+            if (this.buyingPlayer != null)
+            {
+                this.lastBuyingPlayer = this.buyingPlayer.getCommandSenderName();
+            }
+            else
+            {
+                this.lastBuyingPlayer = null;
+            }
+        }
+        
 
         if (par1MerchantRecipe.getItemToBuy().getItem() == GCItems.meteoricIronRaw)
         {
