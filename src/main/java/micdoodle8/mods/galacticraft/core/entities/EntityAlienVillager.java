@@ -113,24 +113,24 @@ public class EntityAlienVillager extends EntityAgeable implements IEntityBreatha
     /**
      * Called when a player interacts with a mob. e.g. gets milk from a cow, gets into the saddle on a pig.
      */
-    public boolean interact(EntityPlayer p_70085_1_)
+    public boolean interact(EntityPlayer player)
     {
-        ItemStack itemstack = p_70085_1_.inventory.getCurrentItem();
+        ItemStack itemstack = player.inventory.getCurrentItem();
         boolean flag = itemstack != null && itemstack.getItem() == Items.spawn_egg;
 
-        if (!flag && this.isEntityAlive() && !this.isTrading() && !this.isChild() && !p_70085_1_.isSneaking())
+        if (!flag && this.isEntityAlive() && !this.isTrading() && !this.isChild() && !player.isSneaking())
         {
             if (!this.worldObj.isRemote)
             {
-                this.setCustomer(p_70085_1_);
-                p_70085_1_.displayGUIMerchant(this, this.getCustomNameTag());
+                this.setCustomer(player);
+                player.displayGUIMerchant(this, this.getCustomNameTag());
             }
 
             return true;
         }
         else
         {
-            return super.interact(p_70085_1_);
+            return super.interact(player);
         }
     }
     @Override
@@ -400,28 +400,29 @@ public class EntityAlienVillager extends EntityAgeable implements IEntityBreatha
 
         MerchantRecipeList merchantrecipelist;
         merchantrecipelist = new MerchantRecipeList(); // local recipes
-        func_146091_a(merchantrecipelist, GCItems.fuelCanister, this.rand, this.adjustProbability(0.5F));
-        func_146091_a(merchantrecipelist, GCItems.sensorGlasses, this.rand, this.adjustProbability(0.5F));
-        func_146091_a(merchantrecipelist, GCItems.partNoseCone, this.rand, this.adjustProbability(0.1F));
-        func_146091_a(merchantrecipelist, GCItems.heavyPlatingTier1, this.rand, this.adjustProbability(0.3F));
-        func_146091_a(merchantrecipelist, GCItems.oxMask, this.rand, this.adjustProbability(0.3F));
-        func_146091_a(merchantrecipelist, Item.getItemFromBlock(GCBlocks.glowstoneTorch), this.rand, this.adjustProbability(0.3F));
-        func_146091_a(merchantrecipelist, Item.getItemFromBlock(GCBlocks.airLockSeal), this.rand, this.adjustProbability(0.3F));
-        func_146091_a(merchantrecipelist, GCItems.oxygenConcentrator, this.rand, this.adjustProbability(0.3F));
-        func_146091_a(merchantrecipelist, GCItems.oxygenFan, this.rand, this.adjustProbability(0.3F));
-        func_146091_a(merchantrecipelist, GCItems.oxygenGear, this.rand, this.adjustProbability(0.3F));
-        func_146091_a(merchantrecipelist, GCItems.oxygenVent, this.rand, this.adjustProbability(0.3F));
-        func_146091_a(merchantrecipelist, GCItems.basicItem, this.rand, this.adjustProbability(0.3F));
-        func_146091_a(merchantrecipelist, Items.ender_pearl, this.rand, this.adjustProbability(0.3F));
-        func_146091_a(merchantrecipelist, Items.ender_eye, this.rand, this.adjustProbability(0.3F));
-        func_146091_a(merchantrecipelist, GCItems.oxTankHeavy, this.rand, this.adjustProbability(0.3F));
-        func_146091_a(merchantrecipelist, GCItems.oxTankMedium, this.rand, this.adjustProbability(0.3F));
-        func_146091_a(merchantrecipelist, GCItems.oxTankLight, this.rand, this.adjustProbability(0.3F));
-        func_146091_a(merchantrecipelist, Item.getItemFromBlock(GCBlocks.solarPanel), this.rand, this.adjustProbability(0.3F));
+        func_146091_a(merchantrecipelist, Items.wheat, this.rand, this.adjustProbability(0.9F));
+        addBuyRecipe(merchantrecipelist, GCItems.fuelCanister, this.rand, this.adjustProbability(0.5F));
+        addBuyRecipe(merchantrecipelist, GCItems.sensorGlasses, this.rand, this.adjustProbability(0.5F));
+        addBuyRecipe(merchantrecipelist, GCItems.partNoseCone, this.rand, this.adjustProbability(0.1F));
+        addBuyRecipe(merchantrecipelist, GCItems.heavyPlatingTier1, this.rand, this.adjustProbability(0.3F));
+        addBuyRecipe(merchantrecipelist, GCItems.oxMask, this.rand, this.adjustProbability(0.3F));
+        addBuyRecipe(merchantrecipelist, Item.getItemFromBlock(GCBlocks.glowstoneTorch), this.rand, this.adjustProbability(0.3F));
+        addBuyRecipe(merchantrecipelist, Item.getItemFromBlock(GCBlocks.airLockSeal), this.rand, this.adjustProbability(0.3F));
+        addBuyRecipe(merchantrecipelist, GCItems.oxygenConcentrator, this.rand, this.adjustProbability(0.3F));
+        addBuyRecipe(merchantrecipelist, GCItems.oxygenFan, this.rand, this.adjustProbability(0.3F));
+        addBuyRecipe(merchantrecipelist, GCItems.oxygenGear, this.rand, this.adjustProbability(0.3F));
+        addBuyRecipe(merchantrecipelist, GCItems.oxygenVent, this.rand, this.adjustProbability(0.3F));
+        addBuyRecipe(merchantrecipelist, GCItems.basicItem, this.rand, this.adjustProbability(0.3F));
+        addBuyRecipe(merchantrecipelist, Items.ender_pearl, this.rand, this.adjustProbability(0.3F));
+        addBuyRecipe(merchantrecipelist, Items.ender_eye, this.rand, this.adjustProbability(0.3F));
+        addBuyRecipe(merchantrecipelist, GCItems.oxTankHeavy, this.rand, this.adjustProbability(0.3F));
+        addBuyRecipe(merchantrecipelist, GCItems.oxTankMedium, this.rand, this.adjustProbability(0.3F));
+        addBuyRecipe(merchantrecipelist, GCItems.oxTankLight, this.rand, this.adjustProbability(0.3F));
+        addBuyRecipe(merchantrecipelist, Item.getItemFromBlock(GCBlocks.solarPanel), this.rand, this.adjustProbability(0.3F));
         
         if (merchantrecipelist.isEmpty())
         {
-            func_146091_a(merchantrecipelist, Items.gold_ingot, this.rand, 1.0F);
+            addBuyRecipe(merchantrecipelist, Items.gold_ingot, this.rand, 1.0F);
         }
 
         Collections.shuffle(merchantrecipelist);
@@ -452,13 +453,43 @@ public class EntityAlienVillager extends EntityAgeable implements IEntityBreatha
 		// Set list of recipes
 		
 	}
-    public static void func_146091_a(MerchantRecipeList p_146091_0_, Item p_146091_1_, Random p_146091_2_, float p_146091_3_)
+    public static void addBuyRecipe(MerchantRecipeList mrl, Item p_146091_1_, Random rand, float p_146091_3_)
     {
-        if (p_146091_2_.nextFloat() < p_146091_3_)
+        if (rand.nextFloat() < p_146091_3_)
         {
-            p_146091_0_.add(new MerchantRecipe(func_146088_a(p_146091_1_, p_146091_2_), GCItems.meteoricIronRaw));
+            mrl.add(new MerchantRecipe(func_146088_a(p_146091_1_, rand), GCItems.meteoricIronRaw));
         }
     }
+    
+    public static void func_146089_b(MerchantRecipeList mrl, Item goods, Random rand, float p_146089_3_)
+    {
+        if (rand.nextFloat() < p_146089_3_)
+        {
+            int i = adjustPrice(goods, rand);
+            ItemStack itemstack;
+            ItemStack itemstack1;
+
+            if (i < 0)
+            {
+                itemstack = new ItemStack(GCItems.meteoricIronRaw, 1, 0);
+                itemstack1 = new ItemStack(goods, -i, 0);
+            }
+            else
+            {
+                itemstack = new ItemStack(GCItems.meteoricIronRaw, i, 0);
+                itemstack1 = new ItemStack(goods, 1, 0);
+            }
+
+            mrl.add(new MerchantRecipe(itemstack, itemstack1));
+        }
+    }
+    
+    private static int adjustPrice(Item goods, Random rand)
+    {
+        Tuple tuple = (Tuple)villagersSellingList.get(goods);
+        return tuple == null ? 1 : (((Integer)tuple.getFirst()).intValue() >= ((Integer)tuple.getSecond()).intValue() ? ((Integer)tuple.getFirst()).intValue() : ((Integer)tuple.getFirst()).intValue() + rand.nextInt(((Integer)tuple.getSecond()).intValue() - ((Integer)tuple.getFirst()).intValue()));
+    }
+
     private static ItemStack func_146088_a(Item p_146088_0_, Random p_146088_1_)
     {
         return new ItemStack(p_146088_0_, func_146092_b(p_146088_0_, p_146088_1_), 0);
@@ -476,7 +507,7 @@ public class EntityAlienVillager extends EntityAgeable implements IEntityBreatha
 	}
     static {
     	// item, mimimum to sell, maximum to sell
-        villagersSellingList.put(GCItems.fuelCanister, new Tuple(Integer.valueOf(1), Integer.valueOf(1)));
+        villagersSellingList.put(GCItems.fuelCanister, new Tuple(Integer.valueOf(-1), Integer.valueOf(-1)));
         villagersSellingList.put(GCItems.sensorGlasses, new Tuple(Integer.valueOf(1), Integer.valueOf(1)));
         villagersSellingList.put(GCItems.partNoseCone, new Tuple(Integer.valueOf(1), Integer.valueOf(3)));
         villagersSellingList.put(GCItems.heavyPlatingTier1, new Tuple(Integer.valueOf(4), Integer.valueOf(16)));
