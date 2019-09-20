@@ -1,13 +1,18 @@
 package micdoodle8.mods.galacticraft.core.world.gen;
 
 import micdoodle8.mods.galacticraft.core.blocks.GCBlocks;
+import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.Tuple;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.structure.StructureBoundingBox;
 import net.minecraft.world.gen.structure.StructureComponent;
 
+import java.nio.charset.Charset;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 public class StructureComponentVillageTorch extends StructureComponentVillage
@@ -52,7 +57,7 @@ public class StructureComponentVillageTorch extends StructureComponentVillage
      * second Part of Structure generating, this for example places Spiderwebs,
      * Mob Spawners, it closes Mineshafts at the end, it adds Fences...
      */
-    @Override
+	@Override
     public boolean addComponentParts(World par1World, Random par2Random, StructureBoundingBox par3StructureBoundingBox)
     {
         if (this.averageGroundLevel < 0)
@@ -66,9 +71,10 @@ public class StructureComponentVillageTorch extends StructureComponentVillage
 
             this.boundingBox.offset(0, this.averageGroundLevel - this.boundingBox.maxY + 4 - 1, 0);
         }
-
+        // construct torch
         this.fillWithBlocks(par1World, par3StructureBoundingBox, 0, 0, 0, 2, 3, 1, Blocks.air, Blocks.air, false);
-        this.placeBlockAtCurrentPosition(par1World, Blocks.fence, 0, 1, 0, 0, par3StructureBoundingBox);
+        // world, block, meta, dx, dy, dz, BB
+        /*this.placeBlockAtCurrentPosition(par1World, Blocks.fence, 0, 1, 0, 0, par3StructureBoundingBox);
         this.placeBlockAtCurrentPosition(par1World, Blocks.fence, 0, 1, 1, 0, par3StructureBoundingBox);
         this.placeBlockAtCurrentPosition(par1World, Blocks.fence, 0, 1, 2, 0, par3StructureBoundingBox);
         this.placeBlockAtCurrentPosition(par1World, Blocks.wool, 15, 1, 3, 0, par3StructureBoundingBox);
@@ -76,6 +82,48 @@ public class StructureComponentVillageTorch extends StructureComponentVillage
         this.placeBlockAtCurrentPosition(par1World, GCBlocks.glowstoneTorch, 0, 1, 3, 1, par3StructureBoundingBox);
         this.placeBlockAtCurrentPosition(par1World, GCBlocks.glowstoneTorch, 0, 2, 3, 0, par3StructureBoundingBox);
         this.placeBlockAtCurrentPosition(par1World, GCBlocks.glowstoneTorch, 0, 1, 3, -1, par3StructureBoundingBox);
+        */
+        Map<Byte, Tuple> bricks = new HashMap<Byte, Tuple>();
+
+        String s = "   | # |   ||"+
+          "   |"+
+          " # |"+
+          "   ||"+
+          "   |"+
+          " # |"+
+          "   ||"+
+          " ! |"+
+          "!W!|"+
+          " ! ||";
+        bricks.put(Byte.valueOf("#"), new Tuple(Blocks.fence, 0));
+        bricks.put(Byte.valueOf("!"), new Tuple(GCBlocks.glowstoneTorch, 0));
+        bricks.put(Byte.valueOf("W"), new Tuple(Blocks.wool, 15));
+        build(par1World, bricks, s, par3StructureBoundingBox);
+
+
         return true;
+    }
+    
+    private void build(World world, Map<Byte, Tuple> br, String ss, StructureBoundingBox bbstr) {
+    	int dx = 0;
+        int dy = 0;
+        int dz = 0;
+        byte[] as = ss.getBytes(Charset.defaultCharset());
+        for(int i=0; i<ss.length(); i++) {
+  		  	dx++;
+        	if(br.containsKey(Byte.valueOf(as[i]))) {
+      		  this.placeBlockAtCurrentPosition(world, (Block) br.get(as[i]).getFirst(), (Integer) br.get(as[i]).getSecond(), dx, dy, dz, bbstr);
+      		}
+        	else if(as[i] == '|') {
+        	  dx = 0; 			// new line anyway
+  			  if(as[i+1] == '|') {
+  				  dz = 0;		// new layer
+  				  dy++;
+  				  i++;			// skip ending
+  			  } else {
+  				  dz++;			// new line
+  			  }
+        	} // end if
+        } // end for
     }
 }

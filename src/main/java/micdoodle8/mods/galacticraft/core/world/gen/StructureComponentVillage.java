@@ -96,7 +96,9 @@ public abstract class StructureComponentVillage extends StructureComponent
             {
                 if (par2StructureBoundingBox.isVecInside(var6, 64, var5))
                 {
-                    var3 += Math.max(par1World.getTopSolidOrLiquidBlock(var6, var5), par1World.provider.getAverageGroundLevel());
+                	// why max??
+                    //var3 += Math.max(par1World.getTopSolidOrLiquidBlock(var6, var5), par1World.provider.getAverageGroundLevel());
+                	var3 += par1World.getTopSolidOrLiquidBlock(var6, var5);
                     ++var4;
                 }
             }
