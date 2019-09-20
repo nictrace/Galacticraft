@@ -15,7 +15,7 @@ import org.lwjgl.opengl.GL11;
 @SideOnly(Side.CLIENT)
 public class RenderAlienVillager extends RenderLiving
 {
-    private static final ResourceLocation villagerTexture = new ResourceLocation(GalacticraftCore.ASSET_PREFIX, "textures/model/villager.png");
+    private static ResourceLocation villagerTexture = new ResourceLocation(GalacticraftCore.ASSET_PREFIX, "textures/model/villager.png");
 
     protected ModelAlienVillager villagerModel;
 
@@ -43,7 +43,7 @@ public class RenderAlienVillager extends RenderLiving
     protected void preRenderVillager(EntityAlienVillager par1EntityVillager, float par2)
     {
         float f1 = 0.9375F;
-        if(par1EntityVillager.getProfession() == 0) 
+        if(par1EntityVillager.getProfession() == 0) villagerTexture = new ResourceLocation(GalacticraftCore.ASSET_PREFIX, "textures/model/villager1.png"); 
         if (par1EntityVillager.getGrowingAge() < 0)
         {
             f1 = (float) (f1 * 0.5D);
