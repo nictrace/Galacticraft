@@ -507,8 +507,7 @@ public class EntityAlienVillager extends EntityAgeable implements IEntityBreatha
             addSellRecipe(merchantrecipelist, Item.getItemFromBlock(GCBlocks.aluminumWire), this.rand, this.adjustProbability(0.8F));
             addSellRecipe(merchantrecipelist, GCItems.basicItem, this.rand, this.adjustProbability(0.9F));
             if(Loader.isModLoaded(IC2ID)) {
-            	addSellRecipe(merchantrecipelist, GCItems.heavyPlatingTier1, this.rand, this.adjustProbability(0.1F));
-            	GameRegistry.findItem(IC2ID, "itemOreIridium");
+            	addSellRecipe(merchantrecipelist, GameRegistry.findItem(IC2ID, "itemOreIridium"), this.rand, this.adjustProbability(0.1F));
             }
             
             // add sell iridium / schematics
