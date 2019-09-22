@@ -2,6 +2,8 @@ package micdoodle8.mods.galacticraft.core.tile;
 
 import cpw.mods.fml.relauncher.Side;
 import micdoodle8.mods.galacticraft.api.recipe.CompressorRecipes;
+import micdoodle8.mods.galacticraft.api.world.IGalacticraftWorldProvider;
+import micdoodle8.mods.galacticraft.api.world.OxygenHooks;
 import micdoodle8.mods.galacticraft.core.inventory.PersistantInventoryCrafting;
 import micdoodle8.mods.galacticraft.core.util.ConfigManagerCore;
 import micdoodle8.mods.galacticraft.core.util.GCCoreUtil;
@@ -133,6 +135,12 @@ public class TileEntityIngotCompressor extends TileEntityAdvanced implements IIn
     private boolean canSmelt()
     {
         ItemStack itemstack = this.producingStack;
+        if(this.worldObj.provider instanceof IGalacticraftWorldProvider) {
+        	// check breathable
+        	boolean oxy = OxygenHooks.checkTorchHasOxygen(this.worldObj, null, this.xCoord, this.yCoord, this.zCoord);
+        	if(!oxy) oxy = OxygenHooks.inOxygenBubble(this.worldObj, this.xCoord, this.yCoord, this.zCoord);
+        	if(!oxy) return false;
+        }
         if (itemstack == null)
         {
             return false;
