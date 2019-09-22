@@ -452,8 +452,8 @@ public class WorldUtil
         	if (element == ConfigManagerCore.idDimensionOverworld) continue;
 
         	CelestialBody target_cb = getReachableCelestialBodiesForDimensionID(element);
-        	int relativеTier = getRelativeTier(departure_cb, target_cb);
-        	if(tier >= relativеTier)
+        	int relativeTier = getRelativeTier(departure_cb, target_cb);
+        	if(tier >= relativeTier)
         		temp.add(element);
         }
 
@@ -657,7 +657,6 @@ private static int getRelativeTier(CelestialBody departure_cb, CelestialBody tar
 
         for (Integer id : ids)
         {
-        	// получить CelestialBody по id (название вводит в ступор!) 
             CelestialBody celestialBody = getReachableCelestialBodiesForDimensionID(id);
 
             //It's a space station
@@ -1607,18 +1606,20 @@ private static int getRelativeTier(CelestialBody departure_cb, CelestialBody tar
 
     public static boolean otherModPreventGenerate(int chunkX, int chunkZ, World world, IChunkProvider chunkGenerator, IChunkProvider chunkProvider)
     {
-        if (!(world.provider instanceof IGalacticraftWorldProvider)) return false;
-        if (world.provider instanceof WorldProviderSpaceStation) return true;
-        if (ConfigManagerCore.enableOtherModsFeatures) return false;
+        if (!(world.provider instanceof IGalacticraftWorldProvider)) return false; // if current world is NOT a GC world
+        if (world.provider instanceof WorldProviderSpaceStation) return true;	// if it's a spacestation
+        if (ConfigManagerCore.enableOtherModsFeatures) return false;		// if option enabled
         
         if (!generatorsInitialised)
         {
         	generatorsInitialised = true;
         	try {
+			GCLog.severe("Checking COG class...");
         		Class cog = Class.forName("CustomOreGen.FMLInterface");
         		if(cog != null) {
+				GCLog.severe("COG found!");
 		        	final Field regField = Class.forName("cpw.mods.fml.common.registry.GameRegistry").getDeclaredField("worldGenerators");
-		            regField.setAccessible(true);
+		        	regField.setAccessible(true);
 		        	Set<IWorldGenerator> registeredGenerators = (Set<IWorldGenerator>) regField.get(null);
 		        	for (IWorldGenerator gen : registeredGenerators)
 		        		if (cog.isInstance(gen)) {
