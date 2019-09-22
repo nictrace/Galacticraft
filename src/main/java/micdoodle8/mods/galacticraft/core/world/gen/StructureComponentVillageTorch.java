@@ -83,7 +83,7 @@ public class StructureComponentVillageTorch extends StructureComponentVillage
         this.placeBlockAtCurrentPosition(par1World, GCBlocks.glowstoneTorch, 0, 2, 3, 0, par3StructureBoundingBox);
         this.placeBlockAtCurrentPosition(par1World, GCBlocks.glowstoneTorch, 0, 1, 3, -1, par3StructureBoundingBox);
         */
-        Map<Byte, Tuple> bricks = new HashMap<Byte, Tuple>();
+        Map<Character, Tuple> bricks = new HashMap<Character, Tuple>();
 
         String s = "   | # |   ||"+
           "   |"+
@@ -95,35 +95,37 @@ public class StructureComponentVillageTorch extends StructureComponentVillage
           " ! |"+
           "!W!|"+
           " ! ||";
-        bricks.put(Byte.valueOf("#"), new Tuple(Blocks.fence, 0));
-        bricks.put(Byte.valueOf("!"), new Tuple(GCBlocks.glowstoneTorch, 0));
-        bricks.put(Byte.valueOf("W"), new Tuple(Blocks.wool, 15));
+        bricks.put(Character.valueOf('#'), new Tuple(Blocks.fence, 0));
+        bricks.put(Character.valueOf('!'), new Tuple(GCBlocks.glowstoneTorch, 0));
+        bricks.put(Character.valueOf('W'), new Tuple(Blocks.wool, 15));
         build(par1World, bricks, s, par3StructureBoundingBox);
 
 
         return true;
     }
     
-    private void build(World world, Map<Byte, Tuple> br, String ss, StructureBoundingBox bbstr) {
+    private void build(World world, Map<Character, Tuple> br, String ss, StructureBoundingBox bbstr) {
     	int dx = 0;
         int dy = 0;
         int dz = 0;
-        byte[] as = ss.getBytes(Charset.defaultCharset());
+
         for(int i=0; i<ss.length(); i++) {
-  		  	dx++;
-        	if(br.containsKey(Byte.valueOf(as[i]))) {
-      		  this.placeBlockAtCurrentPosition(world, (Block) br.get(as[i]).getFirst(), (Integer) br.get(as[i]).getSecond(), dx, dy, dz, bbstr);
-      		}
-        	else if(as[i] == '|') {
-        	  dx = 0; 			// new line anyway
-  			  if(as[i+1] == '|') {
-  				  dz = 0;		// new layer
-  				  dy++;
-  				  i++;			// skip ending
-  			  } else {
-  				  dz++;			// new line
-  			  }
-        	} // end if
-        } // end for
+        	if(br.containsKey(Character.valueOf(ss.charAt(i)))) {
+      		  this.placeBlockAtCurrentPosition(world, (Block) br.get(ss.charAt(i)).getFirst(), (Integer) br.get(ss.charAt(i)).getSecond(), dx, dy, dz, bbstr);
+      		  dx++;
+       		}
+        	else {
+        		dx++;
+        		if(ss.charAt(i) == '|') {
+        			dx = 0;
+        			dz++;
+        			if(ss.charAt(i+1) == '|') {
+        				dz = 0;			// new layer
+        				dy++;
+        				i++;			// skip ending
+        			}
+        		} // end if
+        	} // end for
+        }
     }
 }
