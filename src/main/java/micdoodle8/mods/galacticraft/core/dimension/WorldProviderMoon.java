@@ -294,6 +294,10 @@ public class WorldProviderMoon extends WorldProviderSpace implements IGalacticra
         return 1.4D;
     }
 
+    /**
+     * Use WorldUtil.getPossibleDimensionsForSpaceshipTier(int tier, EntityPlayerMP playerBase)
+     */
+    @Deprecated
     @Override
     public boolean canSpaceshipTierPass(int tier)
     {
